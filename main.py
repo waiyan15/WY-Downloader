@@ -79,15 +79,21 @@ def handle_all(message):
     wait = bot.reply_to(message, f"⏳ {platform} ဗီဒီယိုကို ဒေါင်းလုဒ်ဆွဲနေပါသည်... (ခေတ္တစောင့်ပါ)")
     out_file = f"vid_{message.chat.id}_{int(time.time())}.mp4"
 
-    ydl_opts = {
+        ydl_opts = {
         'format': 'best[ext=mp4][filesize<48M]/best[filesize<48M]/best',
         'outtmpl': out_file,
         'quiet': True,
         'no_warnings': True,
+        'extractor_args': {
+            'youtube': {
+                'player_client': ['ios', 'android']
+            }
+        },
         'http_headers': {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+            'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 16_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.5 Mobile/15E148 Safari/604.1'
         }
     }
+
 
     try:
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
