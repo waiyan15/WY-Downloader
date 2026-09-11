@@ -46,9 +46,19 @@ def extract_youtube_url(text: str):
 
 def tiktok_api(url):
     api = "https://tikwm.com/api/"
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "Accept": "application/json, text/javascript, */*; q=0.01"
+    }
     payload = {"url": url, "hd": 1}
-    r = requests.post(api, data=payload, timeout=15)
-    return r.json()
+    r = requests.post(api, data=payload, headers=headers, timeout=20)
+    if r.status_code != 200:
+        return {}
+    try:
+        return r.json()
+    except Exception:
+        return {}
+
 
 def format_size(size_bytes):
     if size_bytes < 1024 * 1024:
