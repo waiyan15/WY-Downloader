@@ -2,10 +2,12 @@ import os
 import re
 import io
 import time
+import threading
 import requests
 import telebot
 from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
 import yt_dlp
+from flask import Flask
 
 # ================== BOT TOKEN ==================
 BOT_TOKEN = "8706771918:AAGQW9r9Hn9fDMePGXatzt5_9STTwRuWTpk"
@@ -14,6 +16,17 @@ BOT_TOKEN = "8706771918:AAGQW9r9Hn9fDMePGXatzt5_9STTwRuWTpk"
 START_IMAGE = "https://i.supaimg.com/4f602596-8e4b-401c-9465-b978ececeeed/0c5b3096-bcac-452c-a6ad-e7d924643b10.png"
 
 bot = telebot.TeleBot(BOT_TOKEN, parse_mode="HTML")
+
+# --- Render Web Server (Free Tier) ---
+app = Flask(__name__)
+
+@app.route('/')
+def home():
+    return "Bot is Alive and Running!"
+
+def run_web():
+    port = int(os.environ.get("PORT", 8080))
+    app.run(host="0.0.0.0", port=port)
 
 # ======================================================
 #                 Helper Functions
@@ -195,8 +208,13 @@ def handle_all(message):
         except Exception as e:
             if os.path.exists(out_file):
                 os.remove(out_file)
-            bot.edit_message_text(f"⚠️ YouTube Error (ဖိုင်အရွယ်အစား ကြီးလွန်းခြင်း ဖြစ်နိုင်ပါသည်): {e}", message.chat.id, wait.message_id)
+            bot.edit_message_text(f"⚠️ YouTube Error: {e}", message.chat.id, wait.message_id)
         return
 
-print("🤖 Bot Running (TikTok + YouTube)...")
-bot.infinity_polling()
+if __name__ == "__main__":
+    t = threading.Thread(target=run_web)
+    t.daemon = True
+    t.start()
+
+    print("🤖 Bot Running (TikTok + YouTube)...")
+    bot.infinity_polling()
